@@ -41,8 +41,8 @@
 
   /* ---------- 主菜单 ---------- */
   .menu{
-    max-width:900px;margin:20px auto;display:grid;
-    grid-template-columns:repeat(2, 1fr);gap:20px;
+    max-width:1000px;margin:20px auto;display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;
   }
   .game-card{
     background:#fff;border-radius:30px;padding:24px 20px;text-align:center;
@@ -54,10 +54,6 @@
   .game-card .emoji{font-size:56px;line-height:1;margin-bottom:12px;}
   .game-card .name{font-size:22px;font-weight:800;color:#2c3e50;margin-bottom:6px;}
   .game-card .desc{font-size:14px;color:#64748b;}
-
-  @media (max-width:600px){
-    .menu{grid-template-columns:1fr;}
-  }
 
   /* ---------- 游戏1：听音找部位 ---------- */
   .g1{height:100%;display:flex;flex-direction:column;gap:20px;max-width:1000px;margin:0 auto;}
@@ -156,7 +152,6 @@
   .g3-head{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
   .g3-head h2{font-size:24px;color:#2c3e50;margin:0;}
   .g3-timer{font-size:24px;font-weight:800;color:#e74c3c;background:#fff;padding:10px 20px;border-radius:16px;box-shadow:0 4px 10px rgba(0,0,0,.05);}
-  
   .g3-drag-area{flex:1;display:flex;align-items:center;justify-content:center;width:100%;}
   .sort-item{
     background:#fff;border-radius:30px;width:150px;height:150px;
@@ -167,10 +162,7 @@
   }
   .sort-item.dragging{opacity:.3;}
   .sort-item.ghost{position:fixed!important;pointer-events:none;transform:scale(1.1);z-index:9999;}
-  
-  .g3-baskets{
-    display:flex;gap:40px;width:100%;margin-top:20px;
-  }
+  .g3-baskets{display:flex;gap:40px;width:100%;margin-top:20px;}
   .basket{
     flex:1;height:180px;border-radius:30px;background:#fff;
     border:6px dashed #cbd5e1;
@@ -178,7 +170,6 @@
     transition:.2s;position:relative;
   }
   .basket.hover{border-color:#3498db;background:#e3f2fd;transform:scale(1.02);}
-  
   .basket .basket-label{font-size:26px;font-weight:900;color:#2c3e50; margin-bottom: 4px; text-align: center; padding: 0 10px; line-height: 1.2;}
   .basket[data-type="1"] .basket-label{color:#f39c12;}
   .basket[data-type="2"] .basket-label{color:#3498db;}
@@ -190,14 +181,12 @@
   .g4-target{font-size:24px;font-weight:800;color:#2c3e50;}
   .g4-target span{color:#e67e22;font-size:32px;}
   .g4-score{font-size:24px;font-weight:800;color:#f39c12;}
-  
   .speed-controls{display:flex; gap:8px;}
   .speed-btn{
     border:none;background:#f1f5f9;color:#64748b;font-size:16px;font-weight:700;
     padding:8px 16px;border-radius:12px;cursor:pointer;transition:.15s;box-shadow:0 3px 0 #cbd5e1;
   }
   .speed-btn.active{background:#ffd45e;color:#b06c00;box-shadow:0 3px 0 #e09a12;}
-  
   .g4-board{
     flex:1;width:100%;max-width:700px;
     display:grid;grid-template-columns:repeat(3, 1fr);gap:20px;
@@ -225,6 +214,48 @@
   .mole .mole-text{font-size:14px;font-weight:800;color:#2c3e50;margin-top:-4px;pointer-events:none;}
   .mole .hit-star{position:absolute;font-size:40px;animation: popIn .3s ease-out;}
 
+  /* ---------- 游戏5：记忆翻翻乐 ---------- */
+  .g6{height:100%;max-width:800px;margin:0 auto;display:flex;flex-direction:column;align-items:center;}
+  .g6-head{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;background:#fff;padding:16px 24px;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,.05);}
+  .g6-head h2{font-size:24px;color:#2c3e50;margin:0;}
+  .g6-steps{font-size:20px;font-weight:800;color:#e67e22;}
+  .g6-board{display:grid;grid-template-columns:repeat(4, 1fr);gap:15px;width:100%;max-width:600px;perspective:1000px;}
+  .mem-card{aspect-ratio: 1; background:transparent; cursor:pointer; position:relative;transform-style:preserve-3d;transition:transform .4s;}
+  .mem-card.flipped{transform:rotateY(180deg);}
+  .mem-card.matched{pointer-events:none;}
+  .mem-card.matched .back{border-color:#2ecc71;background:#f0fff4;box-shadow:inset 0 0 15px rgba(46,204,113,.2);}
+  .mem-card.matched .back.text{color:#2ecc71;}
+  .mem-card .front, .mem-card .back{
+    position:absolute;inset:0;border-radius:20px;display:flex;align-items:center;justify-content:center;
+    backface-visibility:hidden;box-shadow:0 6px 0 rgba(0,0,0,.1);
+  }
+  .mem-card .front{background:#74b9ff;background-image:radial-gradient(#fff 15%, transparent 16%);background-size:20px 20px;border:4px solid #fff;}
+  .mem-card .front::after{content:'❓';font-size:40px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,.2);}
+  .mem-card .back{background:#fff;transform:rotateY(180deg);border:4px solid #cbd5e1;font-size:52px;color:#2c3e50;font-weight:900;}
+  .mem-card .back.text{font-size:24px;}
+
+  /* ---------- 游戏6：接接乐 ---------- */
+  .g8{height:100%;max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center;}
+  .g8-head{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;background:#fff;padding:16px 24px;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,.05); flex-wrap: wrap; gap: 10px;}
+  .g8-target{font-size:24px;font-weight:800;color:#2c3e50;}
+  .g8-target span{color:#e67e22;font-size:32px;}
+  .g8-score{font-size:24px;font-weight:800;color:#f39c12;}
+  .btn-pause{background:#ffeaa7;color:#d63031;box-shadow:0 4px 0 #fdcb6e;}
+  .btn-pause.resume{background:#55efc4;color:#00b894;box-shadow:0 4px 0 #00cec9;}
+  
+  .g8-board{
+    flex:1;width:100%;background:#e3f2fd;border-radius:30px;position:relative;
+    overflow:hidden;box-shadow:inset 0 10px 20px rgba(0,0,0,.05);cursor:ew-resize;
+    border:6px solid #bbdefb;
+  }
+  .falling-item{
+    position:absolute;font-size:50px;pointer-events:none;user-select:none;
+  }
+  .cart{
+    position:absolute;bottom:10px;font-size:70px;pointer-events:none;
+    transition:transform .1s; transform:translateX(-50%);
+  }
+
   /* ---------- 结果页 ---------- */
   .result{max-width:620px;margin:40px auto;background:#fff;border-radius:36px;padding:50px 30px;text-align:center;box-shadow:0 10px 0 #e2e8f0,0 20px 50px rgba(0,0,0,.08);}
   .result-emoji{font-size:80px;line-height:1;margin-bottom:16px;animation: bounce 2s infinite;}
@@ -237,7 +268,6 @@
   .btn{border:none;font-family:inherit;font-size:20px;font-weight:800;padding:16px 38px;border-radius:20px;cursor:pointer;transition:.15s;background:#e3f2fd;color:#1976d2;box-shadow:0 5px 0 #bbdefb;}
   .btn.primary{background:linear-gradient(150deg,#74b9ff,#0984e3);color:#fff;box-shadow:0 5px 0 #0069c0;}
   .btn:active{transform:translateY(4px);box-shadow:none;}
-
 </style>
 </head>
 <body>
@@ -342,9 +372,6 @@ const PARTS = {
   toes:       {en:'toes',          zh:'脚趾', say:'toes',       emoji:'👣'}
 };
 
-/* =========================================================
-   2. 单复数题库（已按要求进一步精简，保留7组，共14题）
-   ========================================================= */
 const SINGULAR_PLURAL = [
   ['eye', 'eyes', '👁️', '👀'], 
   ['ear', 'ears', '👂', '👂👂'], 
@@ -365,14 +392,14 @@ const PERFECT_GROUPS = [
 ];
 
 /* =========================================================
-   3. 全局状态
+   2. 全局状态
    ========================================================= */
 const state = { stars: 0, screen: 'menu' };
 function updateStars(){ $('#starCount').textContent = state.stars; }
 function showBack(show){ $('#backBtn').classList.toggle('hidden', !show); }
 
 /* =========================================================
-   4. 主菜单
+   3. 主菜单
    ========================================================= */
 function renderMenu(){
   state.screen = 'menu';
@@ -400,6 +427,16 @@ function renderMenu(){
         <div class="name">打地鼠</div>
         <div class="desc">听单词，敲打对应的地鼠</div>
       </div>
+      <div class="game-card" data-go="g6">
+        <div class="emoji">🃏</div>
+        <div class="name">记忆翻翻乐</div>
+        <div class="desc">翻开卡片，找出 Emoji 和单词配对</div>
+      </div>
+      <div class="game-card" data-go="g8">
+        <div class="emoji">🛒</div>
+        <div class="name">接接乐</div>
+        <div class="desc">移动小车，接住掉落的目标部位</div>
+      </div>
     </div>
   `;
   stage.querySelectorAll('.game-card').forEach(card=>{
@@ -410,12 +447,14 @@ function renderMenu(){
       else if(go === 'g2') startG2();
       else if(go === 'g3') startG3();
       else if(go === 'g4') startG4();
+      else if(go === 'g6') startG6();
+      else if(go === 'g8') startG8();
     });
   });
 }
 
 /* =========================================================
-   5. 游戏1：听音找身体部位
+   4. 游戏1：听音找身体部位
    ========================================================= */
 const game1 = { data:[], idx:0, current:null, locked:false, correct:0 };
 let autoNextTimer = null;
@@ -500,7 +539,7 @@ function finishG1(){
 }
 
 /* =========================================================
-   6. 游戏2：图词拖拽配对
+   5. 游戏2：图词拖拽配对
    ========================================================= */
 const game2 = { groupIdx:0, keys:[], matched:0, locked:false };
 let drag = null;
@@ -573,7 +612,7 @@ function onWordUp(e){
 }
 
 /* =========================================================
-   7. 游戏3：单复数分类站（精简题库）
+   6. 游戏3：单复数分类站
    ========================================================= */
 const game3 = { queue: [], idx: 0, total: 0 };
 let g3Drag = null;
@@ -582,18 +621,13 @@ function startG3() {
   state.screen = 'g3';
   $('#title').textContent = '单复数分类站';
   showBack(true);
-  
-  // 从精简后的 SINGULAR_PLURAL 生成题库
   let pool = [];
   SINGULAR_PLURAL.forEach(pair => {
     pool.push({ word: pair[0], pair: pair, isPlural: false, emoji: pair[2] });
     pool.push({ word: pair[1], pair: pair, isPlural: true, emoji: pair[3] });
   });
-  
   game3.queue = shuffle(pool);
-  game3.idx = 0;
-  game3.total = game3.queue.length;
-  game3.correct = 0;
+  game3.idx = 0; game3.total = game3.queue.length; game3.correct = 0;
   renderG3();
 }
 
@@ -603,283 +637,396 @@ function renderG3() {
     showResult('🧺', '分类完成！', `你分类对了 <b>${game3.correct}</b> / ${game3.total} 个`, Math.min(game3.correct, 5), startG3);
     return;
   }
-
   const currentData = game3.queue[game3.idx];
-  const singleText = currentData.pair[0];
-  const pluralText = currentData.pair[1];
-
   stage.innerHTML = `
     <div class="g3">
       <div class="g3-head">
         <h2>把卡片拖进对应的篮子</h2>
         <div class="g3-timer">进度: ${game3.idx + 1} / ${game3.total}</div>
       </div>
-      
       <div class="g3-drag-area">
         <div class="sort-item" id="dragItem" data-word="${currentData.word}">
           ${currentData.emoji}
         </div>
       </div>
-
       <div class="g3-baskets">
-        <!-- 左边展示单数单词 -->
         <div class="basket" data-type="1" id="basket1">
-          <div class="basket-label">${singleText}</div>
+          <div class="basket-label">${currentData.pair[0]}</div>
           <div class="basket-desc">单数 (One)</div>
         </div>
-        <!-- 右边展示复数单词 -->
         <div class="basket" data-type="2" id="basket2">
-          <div class="basket-label">${pluralText}</div>
+          <div class="basket-label">${currentData.pair[1]}</div>
           <div class="basket-desc">复数 (Many)</div>
         </div>
       </div>
     </div>
   `;
-
   const item = $('#dragItem');
   item.addEventListener('pointerdown', onG3DragStart);
-
   setTimeout(() => speak(currentData.word), 300);
 }
-
 function onG3DragStart(e) {
   e.preventDefault();
   const item = e.currentTarget;
   const r = item.getBoundingClientRect();
-  const ghost = item.cloneNode(true);
-  ghost.classList.add('ghost');
-  ghost.style.left = r.left + 'px';
-  ghost.style.top = r.top + 'px';
-  ghost.style.width = r.width + 'px';
-  ghost.style.height = r.height + 'px';
+  const ghost = item.cloneNode(true); ghost.classList.add('ghost');
+  ghost.style.left = r.left + 'px'; ghost.style.top = r.top + 'px'; ghost.style.width = r.width + 'px'; ghost.style.height = r.height + 'px';
   document.body.appendChild(ghost);
-
   g3Drag = { item, ghost, dx: e.clientX - r.left, dy: e.clientY - r.top, word: item.dataset.word };
   item.classList.add('dragging');
-
   window.addEventListener('pointermove', onG3DragMove);
   window.addEventListener('pointerup', onG3DragEnd);
 }
-
 function onG3DragMove(e) {
   if(!g3Drag) return;
-  g3Drag.ghost.style.left = (e.clientX - g3Drag.dx) + 'px';
-  g3Drag.ghost.style.top = (e.clientY - g3Drag.dy) + 'px';
-
+  g3Drag.ghost.style.left = (e.clientX - g3Drag.dx) + 'px'; g3Drag.ghost.style.top = (e.clientY - g3Drag.dy) + 'px';
   const el = document.elementFromPoint(e.clientX, e.clientY);
   const target = el && el.closest ? el.closest('.basket') : null;
-
   document.querySelectorAll('.basket.hover').forEach(b => { if(b !== target) b.classList.remove('hover'); });
   if(target) target.classList.add('hover');
 }
-
 function onG3DragEnd(e) {
   if(!g3Drag) return;
-  window.removeEventListener('pointermove', onG3DragMove);
-  window.removeEventListener('pointerup', onG3DragEnd);
-
-  const { item, ghost } = g3Drag;
-  ghost.remove();
-  item.classList.remove('dragging');
+  window.removeEventListener('pointermove', onG3DragMove); window.removeEventListener('pointerup', onG3DragEnd);
+  const { item, ghost } = g3Drag; ghost.remove(); item.classList.remove('dragging');
   document.querySelectorAll('.basket.hover').forEach(b => b.classList.remove('hover'));
-
   const el = document.elementFromPoint(e.clientX, e.clientY);
   const target = el && el.closest ? el.closest('.basket') : null;
   g3Drag = null;
-
   if(target) {
     const type = target.dataset.type;
     const currentData = game3.queue[game3.idx];
     const isCorrect = (type === '2' && currentData.isPlural) || (type === '1' && !currentData.isPlural);
-
     if(isCorrect) {
-      sfxRight();
-      speak(currentData.word);
-      game3.correct++;
-      game3.idx++;
+      sfxRight(); speak(currentData.word);
+      game3.correct++; game3.idx++;
       item.style.transform = 'scale(0)';
       setTimeout(() => renderG3(), 400);
     } else {
-      sfxWrong();
-      item.classList.add('shake');
+      sfxWrong(); item.classList.add('shake');
       setTimeout(() => item.classList.remove('shake'), 440);
     }
   }
 }
 
 /* =========================================================
-   8. 游戏4：打地鼠（带难度调节）
+   7. 游戏4：打地鼠
    ========================================================= */
-const game4 = { 
-  score: 0, 
-  timeLeft: 30, 
-  targetWord: null, 
-  timer: null, 
-  moleTimer: null, 
-  speed: 'slow' // 默认慢速
-};
-
-// 速度配置：spawn=出现间隔, stay=停留时间, maxMoles=同时出现数量
-const SPEED_CONFIG = {
-  slow:   { spawn: 1500, stay: 2500, maxMoles: 1 },
-  normal: { spawn: 1000, stay: 1800, maxMoles: 1 },
-  fast:   { spawn: 600,  stay: 1200, maxMoles: 2 }
-};
+const game4 = { score: 0, timeLeft: 30, targetWord: null, timer: null, moleTimer: null, speed: 'slow' };
+const SPEED_CONFIG = { slow: { spawn: 1500, stay: 2500, maxMoles: 1 }, normal: { spawn: 1000, stay: 1800, maxMoles: 1 }, fast: { spawn: 600, stay: 1200, maxMoles: 2 } };
 
 function startG4() {
-  state.screen = 'g4';
-  $('#title').textContent = '打地鼠';
-  showBack(true);
-  game4.score = 0;
-  game4.timeLeft = 30;
-  game4.speed = 'slow';
-  
-  renderG4();
-  startG4Round();
+  state.screen = 'g4'; $('#title').textContent = '打地鼠'; showBack(true);
+  game4.score = 0; game4.timeLeft = 30; game4.speed = 'slow';
+  renderG4(); startG4Round();
 }
-
 function renderG4() {
   stage.innerHTML = `
     <div class="g4">
       <div class="g4-head">
         <div class="g4-target">请敲打：<span id="g4TargetText">...</span></div>
-        
-        <!-- 难度选择按钮 -->
         <div class="speed-controls">
           <button class="speed-btn ${game4.speed==='slow'?'active':''}" data-speed="slow">🐢 慢速</button>
           <button class="speed-btn ${game4.speed==='normal'?'active':''}" data-speed="normal">🚶‍♂️ 普通</button>
           <button class="speed-btn ${game4.speed==='fast'?'active':''}" data-speed="fast">🐇 快速</button>
         </div>
-
         <div class="g4-score">得分: <span id="g4ScoreText">0</span></div>
         <div class="g4-score" style="color:#e74c3c;">倒计时: <span id="g4TimeText">30</span>s</div>
       </div>
-      
       <div class="g4-board" id="g4Board">
         ${Array(9).fill(0).map((_, i) => `
           <div class="hole" data-index="${i}">
             <div class="mole" id="mole-${i}">
-              <div class="mole-emoji"></div>
-              <div class="mole-text"></div>
+              <div class="mole-emoji"></div><div class="mole-text"></div>
             </div>
           </div>
         `).join('')}
       </div>
     </div>
   `;
-  
-  // 绑定敲打事件
   document.querySelectorAll('.hole').forEach(hole => {
     hole.addEventListener('pointerdown', (e) => {
       const mole = hole.querySelector('.mole');
       if(!mole.classList.contains('up') || mole.classList.contains('hit')) return;
-      
       const word = mole.dataset.word;
       if(word === game4.targetWord) {
-        sfxHit();
-        mole.classList.add('hit');
+        sfxHit(); mole.classList.add('hit');
         mole.insertAdjacentHTML('beforeend', '<div class="hit-star">💥</div>');
-        game4.score += 1;
-        $('#g4ScoreText').textContent = game4.score;
-        setTimeout(() => {
-          mole.classList.remove('up', 'hit');
-          mole.querySelector('.hit-star')?.remove();
-        }, 300);
+        game4.score++; $('#g4ScoreText').textContent = game4.score;
+        setTimeout(() => { mole.classList.remove('up', 'hit'); mole.querySelector('.hit-star')?.remove(); }, 300);
         nextG4Target();
       } else {
-        sfxWrong();
-        mole.classList.add('shake');
+        sfxWrong(); mole.classList.add('shake');
         setTimeout(()=>mole.classList.remove('shake'), 400);
       }
     });
   });
-
-  // 绑定难度按钮事件
   document.querySelectorAll('.speed-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-      e.target.classList.add('active');
-      game4.speed = e.target.dataset.speed;
-      // 重启地鼠生成器以应用新速度
-      clearInterval(game4.moleTimer);
-      startMoleSpawner();
+      e.target.classList.add('active'); game4.speed = e.target.dataset.speed;
+      clearInterval(game4.moleTimer); startMoleSpawner();
     });
   });
 }
-
 function nextG4Target() {
   game4.targetWord = G1_POOL[Math.floor(Math.random() * G1_POOL.length)];
   $('#g4TargetText').textContent = PARTS[game4.targetWord].en;
   speak(PARTS[game4.targetWord].say);
 }
-
 function startG4Round() {
   nextG4Target();
-
   game4.timer = setInterval(() => {
-    game4.timeLeft--;
-    $('#g4TimeText').textContent = game4.timeLeft;
+    game4.timeLeft--; $('#g4TimeText').textContent = game4.timeLeft;
     if(game4.timeLeft <= 0) endG4();
   }, 1000);
-
   startMoleSpawner();
 }
-
 function startMoleSpawner() {
   const config = SPEED_CONFIG[game4.speed];
-  
   game4.moleTimer = setInterval(() => {
-    // 选出目前没冒出来的洞
     const allMoles = Array.from(document.querySelectorAll('.mole'));
     const downMoles = allMoles.filter(m => !m.classList.contains('up'));
     if(downMoles.length === 0) return;
-
-    // 根据配置决定冒出数量
     let count = config.maxMoles;
-    if (count > 1 && Math.random() > 0.5) count = 1; // 随机减少数量，避免太拥挤
-
+    if (count > 1 && Math.random() > 0.5) count = 1;
     for(let i=0; i<count; i++) {
       if(downMoles.length === 0) break;
       const idx = Math.floor(Math.random() * downMoles.length);
       const mole = downMoles.splice(idx, 1)[0];
-      
-      let word;
-      // 保证目标词经常出现
-      if(Math.random() < 0.4) {
-        word = game4.targetWord;
-      } else {
-        const others = G1_POOL.filter(k => k !== game4.targetWord);
-        word = others[Math.floor(Math.random() * others.length)];
-      }
-      
+      let word = Math.random() < 0.4 ? game4.targetWord : G1_POOL.filter(k => k !== game4.targetWord)[Math.floor(Math.random() * (G1_POOL.length - 1))];
       mole.dataset.word = word;
       mole.querySelector('.mole-emoji').textContent = PARTS[word].emoji;
       mole.querySelector('.mole-text').textContent = PARTS[word].en;
-      
       mole.classList.add('up');
-      
-      // 根据配置停留时间缩回
-      setTimeout(() => {
-        if(mole.classList.contains('up') && !mole.classList.contains('hit')) {
-          mole.classList.remove('up');
-        }
-      }, config.stay);
+      setTimeout(() => { if(mole.classList.contains('up') && !mole.classList.contains('hit')) mole.classList.remove('up'); }, config.stay);
     }
   }, config.spawn);
 }
-
 function endG4() {
-  clearInterval(game4.timer);
-  clearInterval(game4.moleTimer);
+  clearInterval(game4.timer); clearInterval(game4.moleTimer);
   document.querySelectorAll('.mole').forEach(m => m.classList.remove('up'));
-  sfxWin();
-  state.stars += game4.score;
-  updateStars();
+  sfxWin(); state.stars += game4.score; updateStars();
   showResult('🔨', '时间到！', `你敲对了 <b>${game4.score}</b> 个地鼠`, Math.min(game4.score, 5), startG4);
 }
 
 /* =========================================================
-   9. 通用结果页
+   8. 游戏6：记忆翻翻乐
+   ========================================================= */
+const game6 = { cards: [], flipped: [], matched: 0, locked: false };
+function startG6() {
+  state.screen = 'g6'; $('#title').textContent = '记忆翻翻乐'; showBack(true);
+  const pool = shuffle(Object.keys(PARTS)).slice(0, 6);
+  let deck = [];
+  pool.forEach(word => {
+    deck.push({ id: word + '_emoji', pair: word, type: 'emoji', content: PARTS[word].emoji });
+    deck.push({ id: word + '_text', pair: word, type: 'text', content: PARTS[word].en });
+  });
+  game6.cards = shuffle(deck); game6.flipped = []; game6.matched = 0; game6.locked = false;
+  renderG6();
+}
+function renderG6() {
+  stage.innerHTML = `
+    <div class="g6">
+      <div class="g6-head">
+        <h2>找出对应的 Emoji 和单词</h2>
+        <div class="g6-steps">配对: <span id="g6MatchedText">0</span> / 6</div>
+      </div>
+      <div class="g6-board" id="g6Board">
+        ${game6.cards.map((card, i) => `
+          <div class="mem-card" data-index="${i}">
+            <div class="front"></div><div class="back ${card.type === 'text' ? 'text' : ''}">${card.content}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  document.querySelectorAll('.mem-card').forEach(cardEl => {
+    cardEl.addEventListener('click', () => {
+      if (game6.locked) return;
+      const idx = parseInt(cardEl.dataset.index);
+      if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+      cardEl.classList.add('flipped'); game6.flipped.push(idx);
+      if (game6.flipped.length === 2) {
+        game6.locked = true;
+        const idx1 = game6.flipped[0], idx2 = game6.flipped[1];
+        const card1 = game6.cards[idx1], card2 = game6.cards[idx2];
+        if (card1.pair === card2.pair && card1.type !== card2.type) {
+          sfxRight(); speak(card1.pair);
+          setTimeout(() => {
+            document.querySelector(`.mem-card[data-index="${idx1}"]`).classList.add('matched');
+            document.querySelector(`.mem-card[data-index="${idx2}"]`).classList.add('matched');
+            game6.matched++; $('#g6MatchedText').textContent = game6.matched;
+            game6.flipped = []; game6.locked = false;
+            if (game6.matched === 6) {
+              setTimeout(() => {
+                sfxWin(); state.stars += 6; updateStars();
+                showResult('🃏', '记忆大师！', `你成功找出了所有的配对！`, 5, startG6);
+              }, 600);
+            }
+          }, 500);
+        } else {
+          sfxWrong();
+          setTimeout(() => {
+            document.querySelector(`.mem-card[data-index="${idx1}"]`).classList.remove('flipped');
+            document.querySelector(`.mem-card[data-index="${idx2}"]`).classList.remove('flipped');
+            game6.flipped = []; game6.locked = false;
+          }, 1000);
+        }
+      }
+    });
+  });
+}
+
+/* =========================================================
+   9. 游戏8：接接乐 (修复暂停/继续逻辑)
+   ========================================================= */
+const game8 = { score: 0, timeLeft: 30, targetWord: null, timer: null, spawnTimer: null, reqId: null, items: [], cartX: 0, isPaused: false };
+
+function startG8() {
+  state.screen = 'g8'; $('#title').textContent = '接接乐'; showBack(true);
+  game8.score = 0; game8.timeLeft = 30; game8.items = []; game8.cartX = 50; game8.isPaused = false;
+  renderG8();
+  startG8Round();
+}
+
+function renderG8() {
+  stage.innerHTML = `
+    <div class="g8">
+      <div class="g8-head">
+        <div class="g8-target">接住：<span id="g8TargetText">...</span></div>
+        <button class="btn-sm btn-pause" id="pauseBtn">⏸️ 暂停</button>
+        <div class="g8-score">得分: <span id="g8ScoreText">0</span></div>
+        <div class="g8-score" style="color:#e74c3c;">倒计时: <span id="g8TimeText">30</span>s</div>
+      </div>
+      <div class="g8-board" id="g8Board">
+        <div class="cart" id="cart" style="left: 50%;">🛒</div>
+      </div>
+    </div>
+  `;
+
+  const board = $('#g8Board');
+  const cart = $('#cart');
+  
+  board.addEventListener('pointermove', (e) => {
+    if (game8.isPaused) return;
+    const rect = board.getBoundingClientRect();
+    let x = e.clientX - rect.left;
+    if (x < 40) x = 40;
+    if (x > rect.width - 40) x = rect.width - 40;
+    game8.cartX = x;
+    cart.style.left = x + 'px';
+  });
+
+  // 暂停按钮逻辑
+  $('#pauseBtn').addEventListener('click', (e) => {
+    game8.isPaused = !game8.isPaused;
+    const btn = e.currentTarget;
+    if (game8.isPaused) {
+      btn.textContent = '▶️ 继续';
+      btn.classList.add('resume');
+      cancelAnimationFrame(game8.reqId); // 彻底停掉当前帧
+    } else {
+      btn.textContent = '⏸️ 暂停';
+      btn.classList.remove('resume');
+      game8.reqId = requestAnimationFrame(game8Loop); // 恢复动画循环
+    }
+  });
+}
+
+// 将 game8Loop 定义在外部，确保暂停和恢复都能访问到
+function game8Loop() {
+  if (game8.isPaused) return; // 如果是暂停状态，就不再继续请求新帧
+
+  const board = $('#g8Board');
+  if(!board) return;
+  const rect = board.getBoundingClientRect();
+  const cartRect = $('#cart').getBoundingClientRect();
+
+  for(let i = game8.items.length - 1; i >= 0; i--) {
+    const item = game8.items[i];
+    item.y += item.speed;
+    item.el.style.top = item.y + 'px';
+
+    const itemRect = item.el.getBoundingClientRect();
+    // 碰到小车
+    if(itemRect.bottom >= cartRect.top + 20 && itemRect.left < cartRect.right && itemRect.right > cartRect.left) {
+      if(item.word === game8.targetWord) {
+        sfxRight(); speak(item.word);
+        game8.score++; $('#g8ScoreText').textContent = game8.score;
+        nextG8Target();
+      } else {
+        sfxWrong();
+        board.style.backgroundColor = '#ffcdd2';
+        setTimeout(() => board.style.backgroundColor = '#e3f2fd', 200);
+      }
+      item.el.remove();
+      game8.items.splice(i, 1);
+      continue;
+    }
+
+    // 掉出屏幕
+    if(item.y > rect.height) {
+      item.el.remove();
+      game8.items.splice(i, 1);
+    }
+  }
+  game8.reqId = requestAnimationFrame(game8Loop);
+}
+
+function nextG8Target() {
+  game8.targetWord = G1_POOL[Math.floor(Math.random() * G1_POOL.length)];
+  $('#g8TargetText').textContent = PARTS[game8.targetWord].en;
+  speak(PARTS[game8.targetWord].say);
+}
+
+function startG8Round() {
+  nextG8Target();
+  
+  // 计时器：通过判断 isPaused 来控制是否扣时间
+  game8.timer = setInterval(() => {
+    if (game8.isPaused) return;
+    game8.timeLeft--;
+    $('#g8TimeText').textContent = game8.timeLeft;
+    if(game8.timeLeft <= 0) endG8();
+  }, 1000);
+
+  // 生成器：通过判断 isPaused 来控制是否生成
+  game8.spawnTimer = setInterval(() => {
+    if (game8.isPaused) return;
+    const board = $('#g8Board');
+    if(!board) return;
+    const rect = board.getBoundingClientRect();
+    
+    let word = Math.random() < 0.3 ? game8.targetWord : G1_POOL[Math.floor(Math.random() * G1_POOL.length)];
+    
+    const el = document.createElement('div');
+    el.className = 'falling-item';
+    el.textContent = PARTS[word].emoji;
+    el.dataset.word = word;
+    el.style.left = Math.random() * (rect.width - 60) + 20 + 'px';
+    el.style.top = '-60px';
+    board.appendChild(el);
+    
+    game8.items.push({ el: el, y: -60, speed: 2 + Math.random() * 2, word: word });
+  }, 800);
+
+  // 启动循环
+  game8.reqId = requestAnimationFrame(game8Loop);
+}
+
+function endG8() {
+  clearInterval(game8.timer);
+  clearInterval(game8.spawnTimer);
+  cancelAnimationFrame(game8.reqId);
+  sfxWin();
+  state.stars += game8.score;
+  updateStars();
+  showResult('🛒', '时间到！', `你接住了 <b>${game8.score}</b> 个正确的部位`, Math.min(game8.score, 5), startG8);
+}
+
+/* =========================================================
+   10. 通用结果页
    ========================================================= */
 function showResult(emoji, title, html, stars, onAgain){
   stage.innerHTML = `
@@ -899,12 +1046,12 @@ function showResult(emoji, title, html, stars, onAgain){
 }
 
 /* =========================================================
-   10. 返回按钮 & 启动
+   11. 返回按钮 & 启动
    ========================================================= */
 $('#backBtn').addEventListener('click', ()=>{
   clearTimeout(autoNextTimer);
-  clearInterval(game4.timer);
-  clearInterval(game4.moleTimer);
+  clearInterval(game4.timer); clearInterval(game4.moleTimer);
+  clearInterval(game8.timer); clearInterval(game8.spawnTimer); cancelAnimationFrame(game8.reqId);
   if(window.speechSynthesis) window.speechSynthesis.cancel();
   renderMenu();
 });
