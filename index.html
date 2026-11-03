@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>身体部位小闯关 · 终极版</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0;overflow:hidden;
+    font-family:"Comic Sans MS","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    background:linear-gradient(135deg,#fdfbfb 0%,#ebedee 100%);
+    color:#333;
+    user-select:none;-webkit-user-select:none;
+  }
+  #app{height:100%;display:flex;flex-direction:column;}
+
+  /* ---------- 顶栏 ---------- */
+  #topbar{
+    flex:0 0 auto;display:flex;align-items:center;gap:12px;
+    padding:12px 20px;background:#fff;
+    box-shadow:0 4px 20px rgba(0,0,0,.05);z-index:10;
+  }
+  #backBtn{
+    border:none;background:#e3f2fd;color:#1976d2;font-family:inherit;
+    font-size:17px;font-weight:700;padding:10px 20px;border-radius:16px;
+    cursor:pointer;transition:.15s;box-shadow:0 3px 0 #bbdefb;
+  }
+  #backBtn:hover{background:#bbdefb;}
+  #backBtn:active{transform:translateY(2px);box-shadow:none;}
+  #backBtn.hidden{visibility:hidden;}
+  #title{flex:1;text-align:center;font-size:24px;font-weight:800;color:#2c3e50;}
+  #stars{
+    font-size:18px;font-weight:800;color:#f39c12;
+    background:#fff3cd;padding:10px 18px;border-radius:16px;white-space:nowrap;
+    box-shadow:0 3px 0 #ffeeba;
+  }
+
+  #stage{flex:1;overflow:auto;padding:20px;}
+
+  /* ---------- 主菜单 ---------- */
+  .menu{
+    max-width:900px;margin:20px auto;display:grid;
+    grid-template-columns:repeat(2, 1fr);gap:20px;
+  }
+  .game-card{
+    background:#fff;border-radius:30px;padding:24px 20px;text-align:center;
+    cursor:pointer;transition:.2s;
+    box-shadow:0 8px 0 #e2e8f0, 0 12px 30px rgba(0,0,0,.06);
+    border:4px solid #fff;
+  }
+  .game-card:hover{transform:translateY(-6px);box-shadow:0 12px 0 #cbd5e1,0 18px 40px rgba(0,0,0,.1);border-color:#e3f2fd;}
+  .game-card .emoji{font-size:56px;line-height:1;margin-bottom:12px;}
+  .game-card .name{font-size:22px;font-weight:800;color:#2c3e50;margin-bottom:6px;}
+  .game-card .desc{font-size:14px;color:#64748b;}
+
+  @media (max-width:600px){
+    .menu{grid-template-columns:1fr;}
+  }
+
+  /* ---------- 游戏1：听音找部位 ---------- */
+  .g1{height:100%;display:flex;flex-direction:column;gap:20px;max-width:1000px;margin:0 auto;}
+  .g1-head{
+    display:flex;align-items:center;gap:16px;background:#fff;
+    padding:12px 24px;border-radius:24px;box-shadow:0 6px 20px rgba(0,0,0,.05);
+    flex-wrap:wrap;
+  }
+  .g1-head .btn-sm { font-size:17px; padding:12px 18px; }
+  .g1-head .btn-sm:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; background:#f1f5f9; color:#94a3b8; }
+  .speaker-btn{
+    width:64px;height:64px;border-radius:20px;border:none;cursor:pointer;
+    background:linear-gradient(150deg,#ffd45e,#ffb52e);
+    font-size:32px;line-height:1;transition:.15s;
+    box-shadow:0 5px 0 #e09a12;flex:0 0 auto;
+  }
+  .speaker-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #e09a12;}
+  .g1-info{flex:1;min-width:120px;text-align:center;}
+  .g1-progress{font-size:20px;font-weight:800;color:#2c3e50;}
+  .g1-progress b{color:#e67e22;font-size:24px;}
+  .g1-tip{font-size:15px;color:#64748b;margin-top:4px;}
+  .g1-feedback{
+    font-size:26px;font-weight:800;color:#27ae60;text-align:center;min-height:36px;transition:.2s;
+  }
+  .g1-grid{
+    flex:1;display:grid;grid-template-columns:repeat(2, 1fr);gap:20px;
+    align-content:center;max-width:700px;margin:0 auto;width:100%;
+  }
+  .emoji-btn{
+    background:#fff;border-radius:30px;border:4px solid #fff;
+    box-shadow:0 8px 0 #e2e8f0, 0 10px 24px rgba(0,0,0,.06);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    cursor:pointer;transition:.15s;padding:20px;
+  }
+  .emoji-btn:hover{border-color:#e3f2fd;transform:translateY(-4px);box-shadow:0 12px 0 #cbd5e1, 0 15px 30px rgba(0,0,0,.1);}
+  .emoji-btn:active{transform:translateY(4px);box-shadow:0 4px 0 #e2e8f0;}
+  .emoji-btn .huge-emoji{font-size:80px;line-height:1;margin-bottom:10px;transition:.2s;filter:drop-shadow(0 4px 8px rgba(0,0,0,.1));}
+  .emoji-btn.ok{border-color:#2ecc71;background:#f0fff4;pointer-events:none;}
+  .emoji-btn.ok .huge-emoji{transform:scale(1.15);}
+  .emoji-btn.bad{animation:shake .42s; border-color:#e74c3c; background:#fdf0f0;}
+
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-8px);}
+    40%{transform:translateX(8px);}
+    60%{transform:translateX(-6px);}
+    80%{transform:translateX(6px);}
+  }
+
+  /* ---------- 游戏2：拖拽配对 ---------- */
+  .g2{height:100%;max-width:1000px;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .g2-header{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;background:#fff;padding:16px 24px;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,.05);}
+  .g2-group-title{font-size:22px;font-weight:800;color:#2c3e50;}
+  .g2-group-title span{color:#3498db;}
+  .g2-controls{display:flex;gap:12px;}
+  .btn-sm{
+    border:none;font-family:inherit;font-size:16px;font-weight:700;
+    padding:10px 20px;border-radius:14px;cursor:pointer;transition:.15s;
+    background:#f1f5f9;color:#475569;box-shadow:0 3px 0 #cbd5e1;
+  }
+  .btn-sm:hover{background:#e2e8f0;}
+  .btn-sm:active{transform:translateY(3px);box-shadow:none;}
+  .btn-sm.next-btn{background:#e8f5e9;color:#2e7d32;box-shadow:0 3px 0 #a5d6a7;}
+  .g2-body{flex:1;width:100%;display:flex;gap:30px;align-items:center;justify-content:center;}
+  .g2-col{display:flex;flex-direction:column;gap:16px;flex:1;width:100%;}
+  .pic-card{
+    position:relative;background:#fff;border-radius:20px;height:110px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 5px 0 #e2e8f0,0 8px 20px rgba(0,0,0,.06);
+    border:4px dashed #e2e8f0;transition:.15s;
+  }
+  .pic-card.hover{border-color:#3498db;background:#e3f2fd;transform:scale(1.04);}
+  .pic-card.done{border-style:solid;border-color:#2ecc71;background:#f0fff4;}
+  .pic-card .huge-emoji{font-size:60px;line-height:1;pointer-events:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.1));}
+  .pic-card .tick{
+    position:absolute;top:-12px;right:-12px;width:34px;height:34px;background:#2ecc71;color:#fff;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;
+    box-shadow:0 4px 10px rgba(46,204,113,.4);animation: popIn .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  @keyframes popIn{ 0%{transform:scale(0);} 100%{transform:scale(1);} }
+  .word-card{
+    background:#fff;border-radius:18px;height:70px;cursor:grab;
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;font-weight:800;color:#2c3e50;
+    box-shadow:0 5px 0 #e2e8f0,0 8px 20px rgba(0,0,0,.06);
+    border:4px solid #fff;touch-action:none;transition:opacity .2s;
+  }
+  .word-card:hover{border-color:#e3f2fd;}
+  .word-card.dragging{opacity:.25;}
+  .word-card.done{background:#f0fff4;color:#2ecc71;border-color:#2ecc71;cursor:default;opacity:.8;box-shadow:none;}
+  .word-card.shake{animation:shake .42s;}
+  .word-card.ghost{position:fixed!important;pointer-events:none;transform:rotate(-3deg) scale(1.06);box-shadow:0 16px 36px rgba(0,0,0,.15);border-color:#3498db;}
+
+  /* ---------- 游戏3：单复数分类站 ---------- */
+  .g3{height:100%;max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center;}
+  .g3-head{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  .g3-head h2{font-size:24px;color:#2c3e50;margin:0;}
+  .g3-timer{font-size:24px;font-weight:800;color:#e74c3c;background:#fff;padding:10px 20px;border-radius:16px;box-shadow:0 4px 10px rgba(0,0,0,.05);}
+  
+  .g3-drag-area{flex:1;display:flex;align-items:center;justify-content:center;width:100%;}
+  .sort-item{
+    background:#fff;border-radius:30px;width:150px;height:150px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:90px;cursor:grab;touch-action:none;
+    box-shadow:0 10px 0 #e2e8f0, 0 15px 30px rgba(0,0,0,.1);
+    border:4px solid #fff;transition:transform .1s;
+  }
+  .sort-item.dragging{opacity:.3;}
+  .sort-item.ghost{position:fixed!important;pointer-events:none;transform:scale(1.1);z-index:9999;}
+  
+  .g3-baskets{
+    display:flex;gap:40px;width:100%;margin-top:20px;
+  }
+  .basket{
+    flex:1;height:180px;border-radius:30px;background:#fff;
+    border:6px dashed #cbd5e1;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transition:.2s;position:relative;
+  }
+  .basket.hover{border-color:#3498db;background:#e3f2fd;transform:scale(1.02);}
+  
+  .basket .basket-label{font-size:26px;font-weight:900;color:#2c3e50; margin-bottom: 4px; text-align: center; padding: 0 10px; line-height: 1.2;}
+  .basket[data-type="1"] .basket-label{color:#f39c12;}
+  .basket[data-type="2"] .basket-label{color:#3498db;}
+  .basket .basket-desc{font-size:16px;color:#64748b;font-weight:700;}
+
+  /* ---------- 游戏4：打地鼠 ---------- */
+  .g4{height:100%;max-width:900px;margin:0 auto;display:flex;flex-direction:column;align-items:center;}
+  .g4-head{width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;background:#fff;padding:15px 24px;border-radius:20px;box-shadow:0 4px 16px rgba(0,0,0,.05); flex-wrap: wrap; gap: 10px;}
+  .g4-target{font-size:24px;font-weight:800;color:#2c3e50;}
+  .g4-target span{color:#e67e22;font-size:32px;}
+  .g4-score{font-size:24px;font-weight:800;color:#f39c12;}
+  
+  .speed-controls{display:flex; gap:8px;}
+  .speed-btn{
+    border:none;background:#f1f5f9;color:#64748b;font-size:16px;font-weight:700;
+    padding:8px 16px;border-radius:12px;cursor:pointer;transition:.15s;box-shadow:0 3px 0 #cbd5e1;
+  }
+  .speed-btn.active{background:#ffd45e;color:#b06c00;box-shadow:0 3px 0 #e09a12;}
+  
+  .g4-board{
+    flex:1;width:100%;max-width:700px;
+    display:grid;grid-template-columns:repeat(3, 1fr);gap:20px;
+    padding:30px;background:#a7d397;border-radius:40px;
+    box-shadow:inset 0 10px 20px rgba(0,0,0,.1);
+    border:8px solid #85b879;
+  }
+  .hole{
+    position:relative;background:#5c8a4c;border-radius:50%;
+    aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    box-shadow:inset 0 8px 15px rgba(0,0,0,.4);
+    cursor:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 100 100"><text y="75" font-size="80">🔨</text></svg>') 10 10, auto;
+    overflow:hidden;
+  }
+  .mole{
+    position:absolute;bottom:0;width:90%;height:90%;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:#ffdfc4;border-radius:50% 50% 0 0;
+    transform:translateY(100%);transition:transform .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border:4px solid #f0c3a8;
+  }
+  .mole.up{transform:translateY(0);}
+  .mole.hit{transform:translateY(0);background:#ffb6c1;}
+  .mole .mole-emoji{font-size:46px;pointer-events:none;}
+  .mole .mole-text{font-size:14px;font-weight:800;color:#2c3e50;margin-top:-4px;pointer-events:none;}
+  .mole .hit-star{position:absolute;font-size:40px;animation: popIn .3s ease-out;}
+
+  /* ---------- 结果页 ---------- */
+  .result{max-width:620px;margin:40px auto;background:#fff;border-radius:36px;padding:50px 30px;text-align:center;box-shadow:0 10px 0 #e2e8f0,0 20px 50px rgba(0,0,0,.08);}
+  .result-emoji{font-size:80px;line-height:1;margin-bottom:16px;animation: bounce 2s infinite;}
+  @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+  .result h2{margin:0 0 12px;font-size:32px;color:#2c3e50;}
+  .result p{margin:0 0 20px;font-size:20px;color:#64748b;}
+  .result p b{color:#e67e22;font-size:28px;}
+  .result-stars{font-size:42px;letter-spacing:8px;margin-bottom:30px;min-height:50px;}
+  .result-btns{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;}
+  .btn{border:none;font-family:inherit;font-size:20px;font-weight:800;padding:16px 38px;border-radius:20px;cursor:pointer;transition:.15s;background:#e3f2fd;color:#1976d2;box-shadow:0 5px 0 #bbdefb;}
+  .btn.primary{background:linear-gradient(150deg,#74b9ff,#0984e3);color:#fff;box-shadow:0 5px 0 #0069c0;}
+  .btn:active{transform:translateY(4px);box-shadow:none;}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="topbar">
+    <button id="backBtn" class="hidden">← 返回</button>
+    <div id="title">身体部位小闯关</div>
+    <div id="stars">⭐ <span id="starCount">0</span></div>
+  </header>
+  <main id="stage"></main>
+</div>
+
+<script>
+/* =========================================================
+   0. 基础工具
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const stage = $('#stage');
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+/* --- 音效 --- */
+let audioCtx = null;
+function getCtx(){
+  if(!audioCtx){
+    try{ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){}
+  }
+  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function tone(freq, dur, type='sine', vol=0.16){
+  const ctx = getCtx(); if(!ctx) return;
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = type; o.frequency.value = freq;
+  o.connect(g); g.connect(ctx.destination);
+  const t = ctx.currentTime;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol, t+0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  o.start(t); o.stop(t+dur+0.03);
+}
+const sfxRight = () => { tone(880,0.11); setTimeout(()=>tone(1320,0.17),85); };
+const sfxWrong = () => tone(190,0.22,'sawtooth',0.1);
+const sfxWin   = () => [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,0.24),i*115));
+const sfxHit   = () => tone(440,0.1,'square',0.2);
+
+/* --- 英文朗读 --- */
+let enVoice = null;
+function pickVoice(){
+  if(!window.speechSynthesis) return;
+  const vs = window.speechSynthesis.getVoices();
+  enVoice = vs.find(v=>/en[-_]US/i.test(v.lang)) || vs.find(v=>/^en/i.test(v.lang)) || null;
+}
+if(window.speechSynthesis){
+  pickVoice();
+  window.speechSynthesis.addEventListener('voiceschanged', pickVoice);
+}
+function speak(text, rate=0.8){
+  if(!window.speechSynthesis) return;
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US'; u.rate = rate; u.pitch = 1.15; 
+    if(enVoice) u.voice = enVoice;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* =========================================================
+   1. 词汇数据
+   ========================================================= */
+const PARTS = {
+  hair:       {en:'hair',          zh:'头发', say:'hair',       emoji:'💇‍♀️'},
+  eye:        {en:'eye',           zh:'眼睛', say:'eye',        emoji:'👁️'},
+  eyes:       {en:'eyes',          zh:'双眼', say:'eyes',       emoji:'👀'},
+  ear:        {en:'ear',           zh:'耳朵', say:'ear',        emoji:'👂'},
+  ears:       {en:'ears',          zh:'双耳', say:'ears',       emoji:'👂👂'},
+  mouth:      {en:'mouth',         zh:'嘴巴', say:'mouth',      emoji:'👄'},
+  head:       {en:'head',          zh:'头',   say:'head',       emoji:'🧑'},
+  neck:       {en:'neck',          zh:'脖子', say:'neck',       emoji:'🧣'},
+  forehead:   {en:'forehead',      zh:'额头', say:'forehead',   emoji:'🤦'},
+  eyebrows:   {en:'eyebrows',      zh:'眉毛', say:'eyebrows',   emoji:'🤨'},
+  shoulders:  {en:'shoulders',     zh:'肩膀', say:'shoulders',  emoji:'🤷'},
+  arm:        {en:'arm',           zh:'手臂', say:'arm',        emoji:'💪'},
+  arms:       {en:'arms',          zh:'双臂', say:'arms',       emoji:'💪💪'},
+  hand:       {en:'hand',          zh:'手',   say:'hand',       emoji:'✋'},
+  hands:      {en:'hands',         zh:'双手', say:'hands',      emoji:'🙌'},
+  finger:     {en:'finger',        zh:'手指', say:'finger',     emoji:'👆'},
+  fingers:    {en:'fingers',       zh:'手指', say:'fingers',    emoji:'✌️'},
+  leg:        {en:'leg',           zh:'腿',   say:'leg',        emoji:'🦵'},
+  legs:       {en:'legs',          zh:'双腿', say:'legs',       emoji:'🦵🦵'},
+  foot:       {en:'foot',          zh:'脚',   say:'foot',       emoji:'🦶'},
+  feet:       {en:'feet',          zh:'双脚', say:'feet',       emoji:'🦶🦶'},
+  belly_btn:  {en:'belly button',  zh:'肚脐', say:'belly button',emoji:'🔘'},
+  toes:       {en:'toes',          zh:'脚趾', say:'toes',       emoji:'👣'}
+};
+
+/* =========================================================
+   2. 单复数题库（已按要求进一步精简，保留7组，共14题）
+   ========================================================= */
+const SINGULAR_PLURAL = [
+  ['eye', 'eyes', '👁️', '👀'], 
+  ['ear', 'ears', '👂', '👂👂'], 
+  ['hand', 'hands', '✋', '🙌'], 
+  ['finger', 'fingers', '👆', '✌️'], 
+  ['arm', 'arms', '💪', '💪💪'], 
+  ['leg', 'legs', '🦵', '🦵🦵'], 
+  ['foot', 'feet', '🦶', '🦶🦶']
+];
+
+const G1_POOL = ['hair','forehead','eyebrows','eye','ear','mouth','head','neck','shoulders','arm','hand','finger','belly_btn','leg','foot','toes'];
+const PERFECT_GROUPS = [
+  ['hair', 'eye', 'eyes', 'ear', 'ears'], 
+  ['mouth', 'head', 'neck', 'forehead', 'eyebrows'], 
+  ['shoulders', 'arm', 'arms', 'hand', 'hands'],
+  ['finger', 'fingers', 'leg', 'legs'],
+  ['foot', 'feet', 'belly_btn', 'toes']
+];
+
+/* =========================================================
+   3. 全局状态
+   ========================================================= */
+const state = { stars: 0, screen: 'menu' };
+function updateStars(){ $('#starCount').textContent = state.stars; }
+function showBack(show){ $('#backBtn').classList.toggle('hidden', !show); }
+
+/* =========================================================
+   4. 主菜单
+   ========================================================= */
+function renderMenu(){
+  state.screen = 'menu';
+  $('#title').textContent = '身体部位小闯关';
+  showBack(false);
+  stage.innerHTML = `
+    <div class="menu">
+      <div class="game-card" data-go="g1">
+        <div class="emoji">🎧</div>
+        <div class="name">听音找部位</div>
+        <div class="desc">听英文发音，点出正确部位</div>
+      </div>
+      <div class="game-card" data-go="g2">
+        <div class="emoji">🧩</div>
+        <div class="name">图词拖拽配对</div>
+        <div class="desc">分组挑战，把单词拖到图上</div>
+      </div>
+      <div class="game-card" data-go="g3">
+        <div class="emoji">🧺</div>
+        <div class="name">单复数分类站</div>
+        <div class="desc">精选核心词汇，把卡片拖进正确的框</div>
+      </div>
+      <div class="game-card" data-go="g4">
+        <div class="emoji">🔨</div>
+        <div class="name">打地鼠</div>
+        <div class="desc">听单词，敲打对应的地鼠</div>
+      </div>
+    </div>
+  `;
+  stage.querySelectorAll('.game-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      getCtx(); 
+      const go = card.dataset.go;
+      if(go === 'g1') startG1();
+      else if(go === 'g2') startG2();
+      else if(go === 'g3') startG3();
+      else if(go === 'g4') startG4();
+    });
+  });
+}
+
+/* =========================================================
+   5. 游戏1：听音找身体部位
+   ========================================================= */
+const game1 = { data:[], idx:0, current:null, locked:false, correct:0 };
+let autoNextTimer = null;
+
+function startG1(){
+  state.screen = 'g1';
+  $('#title').textContent = '听音找身体部位';
+  showBack(true);
+  let queue = shuffle(G1_POOL);
+  game1.data = queue.map(word => {
+    let distractors = shuffle(G1_POOL.filter(k => k !== word)).slice(0, 3);
+    return { word: word, options: shuffle([word, ...distractors]), answered: false };
+  });
+  game1.idx = 0; game1.correct = 0;
+  renderG1();
+}
+
+function renderG1(){
+  clearTimeout(autoNextTimer);
+  const currentData = game1.data[game1.idx];
+  game1.current = currentData.word;
+  game1.locked = currentData.answered;
+  const isLast = game1.idx === game1.data.length - 1;
+  const nextBtnText = isLast ? '🏁 完成' : '⏭️ 下一题';
+
+  stage.innerHTML = `
+    <div class="g1">
+      <div class="g1-head">
+        <button class="btn-sm" id="prevBtn" ${game1.idx === 0 ? 'disabled' : ''}>⏮️ 上一题</button>
+        <button class="speaker-btn" id="g1speak">🔊</button>
+        <div class="g1-info">
+          <div class="g1-progress">第 <b>${game1.idx+1}</b> / ${game1.data.length} 题</div>
+          <div class="g1-tip">听一听，点出正确的部位</div>
+        </div>
+        <button class="btn-sm next-btn" id="nextBtn">${nextBtnText}</button>
+      </div>
+      <div class="g1-feedback" id="g1fb">${currentData.answered ? `✔ ${PARTS[game1.current].en} · ${PARTS[game1.current].zh}` : ''}</div>
+      <div class="g1-grid">
+        ${currentData.options.map(k => `
+          <div class="emoji-btn ${currentData.answered && k === game1.current ? 'ok' : ''}" data-word="${k}">
+            <div class="huge-emoji">${PARTS[k].emoji}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  stage.querySelectorAll('.emoji-btn').forEach(btn => btn.addEventListener('click', onEmojiClick));
+  $('#prevBtn').addEventListener('click', () => { if(game1.idx > 0){ game1.idx--; renderG1(); } });
+  $('#nextBtn').addEventListener('click', () => {
+    if(game1.idx < game1.data.length - 1) { game1.idx++; renderG1(); } else { finishG1(); }
+  });
+  $('#g1speak').addEventListener('click', ()=>{ if(game1.current) speak(PARTS[game1.current].say); });
+
+  if(!currentData.answered) {
+    setTimeout(()=>{ if(game1.current && !currentData.answered) speak(PARTS[game1.current].say); }, 350);
+  }
+}
+
+function onEmojiClick(e){
+  if(game1.locked) return;
+  const currentData = game1.data[game1.idx];
+  if(currentData.answered) return;
+  const btn = e.currentTarget, word = btn.dataset.word;
+
+  if(word === game1.current){
+    game1.locked = true; currentData.answered = true; btn.classList.add('ok');
+    sfxRight(); speak(PARTS[word].say); game1.correct++;
+    $('#g1fb').textContent = `✔ ${PARTS[word].en} · ${PARTS[word].zh}`;
+    autoNextTimer = setTimeout(()=>{
+      if(game1.idx < game1.data.length - 1) { game1.idx++; renderG1(); } else { finishG1(); }
+    }, 1400);
+  } else {
+    btn.classList.add('bad'); sfxWrong();
+    setTimeout(()=>btn.classList.remove('bad'), 460);
+  }
+}
+function finishG1(){
+  clearTimeout(autoNextTimer); sfxWin();
+  state.stars += game1.correct; updateStars();
+  showResult('🎉', '太棒了！', `你答对了 <b>${game1.correct}</b> / ${game1.data.length} 题`, game1.correct, startG1);
+}
+
+/* =========================================================
+   6. 游戏2：图词拖拽配对
+   ========================================================= */
+const game2 = { groupIdx:0, keys:[], matched:0, locked:false };
+let drag = null;
+
+function startG2(){
+  state.screen = 'g2'; $('#title').textContent = '图词拖拽配对'; showBack(true);
+  game2.groupIdx = 0; loadG2Group();
+}
+function loadG2Group(){
+  game2.keys = PERFECT_GROUPS[game2.groupIdx]; game2.matched = 0; game2.locked = false; renderG2();
+}
+function renderG2(){
+  const pics  = shuffle(game2.keys); const words = shuffle(game2.keys);
+  stage.innerHTML = `
+    <div class="g2">
+      <div class="g2-header">
+        <div class="g2-group-title">第 <span>${game2.groupIdx + 1}</span> / ${PERFECT_GROUPS.length} 组</div>
+        <div class="g2-controls">
+          <button class="btn-sm" id="shuffleBtn">🔄 打乱重来</button>
+          <button class="btn-sm next-btn" id="nextBtn">👉 下一组</button>
+        </div>
+      </div>
+      <div class="g2-body">
+        <div class="g2-col">${pics.map(k=>`<div class="pic-card" data-word="${k}"><div class="huge-emoji">${PARTS[k].emoji}</div></div>`).join('')}</div>
+        <div class="g2-col">${words.map(k=>`<div class="word-card" data-word="${k}"><span>${PARTS[k].en}</span></div>`).join('')}</div>
+      </div>
+    </div>
+  `;
+  stage.querySelectorAll('.word-card').forEach(el=> el.addEventListener('pointerdown', onWordDown));
+  $('#shuffleBtn').addEventListener('click', ()=> renderG2());
+  $('#nextBtn').addEventListener('click', ()=>{
+    game2.groupIdx = (game2.groupIdx < PERFECT_GROUPS.length - 1) ? game2.groupIdx + 1 : 0;
+    loadG2Group();
+  });
+}
+function onWordDown(e){
+  if(game2.locked) return;
+  const card = e.currentTarget; if(card.classList.contains('done')) return; e.preventDefault();
+  const r = card.getBoundingClientRect();
+  const ghost = card.cloneNode(true); ghost.classList.add('ghost');
+  ghost.style.left = r.left + 'px'; ghost.style.top = r.top + 'px'; ghost.style.width = r.width + 'px'; ghost.style.height = r.height + 'px';
+  document.body.appendChild(ghost);
+  drag = { card, ghost, dx: e.clientX - r.left, dy: e.clientY - r.top, word: card.dataset.word };
+  card.classList.add('dragging');
+  window.addEventListener('pointermove', onWordMove);
+  window.addEventListener('pointerup', onWordUp);
+}
+function onWordMove(e){
+  if(!drag) return;
+  drag.ghost.style.left = (e.clientX - drag.dx) + 'px'; drag.ghost.style.top = (e.clientY - drag.dy) + 'px';
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const target = el && el.closest ? el.closest('.pic-card') : null;
+  stage.querySelectorAll('.pic-card.hover').forEach(c=>{ if(c !== target) c.classList.remove('hover'); });
+  if(target && !target.classList.contains('done')) target.classList.add('hover');
+}
+function onWordUp(e){
+  if(!drag) return;
+  window.removeEventListener('pointermove', onWordMove); window.removeEventListener('pointerup', onWordUp);
+  const { card, ghost, word } = drag; ghost.remove(); card.classList.remove('dragging');
+  stage.querySelectorAll('.pic-card.hover').forEach(c=>c.classList.remove('hover'));
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const target = el && el.closest ? el.closest('.pic-card') : null;
+  drag = null;
+  if(target && !target.classList.contains('done') && target.dataset.word === word){
+    card.classList.add('done'); target.classList.add('done');
+    target.insertAdjacentHTML('beforeend', '<div class="tick">✔</div>');
+    sfxRight(); speak(PARTS[word].say); game2.matched++;
+    if(game2.matched >= game2.keys.length){ game2.locked = true; sfxWin(); state.stars += game2.keys.length; updateStars(); }
+  } else { sfxWrong(); card.classList.add('shake'); setTimeout(()=>card.classList.remove('shake'), 440); }
+}
+
+/* =========================================================
+   7. 游戏3：单复数分类站（精简题库）
+   ========================================================= */
+const game3 = { queue: [], idx: 0, total: 0 };
+let g3Drag = null;
+
+function startG3() {
+  state.screen = 'g3';
+  $('#title').textContent = '单复数分类站';
+  showBack(true);
+  
+  // 从精简后的 SINGULAR_PLURAL 生成题库
+  let pool = [];
+  SINGULAR_PLURAL.forEach(pair => {
+    pool.push({ word: pair[0], pair: pair, isPlural: false, emoji: pair[2] });
+    pool.push({ word: pair[1], pair: pair, isPlural: true, emoji: pair[3] });
+  });
+  
+  game3.queue = shuffle(pool);
+  game3.idx = 0;
+  game3.total = game3.queue.length;
+  game3.correct = 0;
+  renderG3();
+}
+
+function renderG3() {
+  if(game3.idx >= game3.total) {
+    sfxWin(); state.stars += game3.correct; updateStars();
+    showResult('🧺', '分类完成！', `你分类对了 <b>${game3.correct}</b> / ${game3.total} 个`, Math.min(game3.correct, 5), startG3);
+    return;
+  }
+
+  const currentData = game3.queue[game3.idx];
+  const singleText = currentData.pair[0];
+  const pluralText = currentData.pair[1];
+
+  stage.innerHTML = `
+    <div class="g3">
+      <div class="g3-head">
+        <h2>把卡片拖进对应的篮子</h2>
+        <div class="g3-timer">进度: ${game3.idx + 1} / ${game3.total}</div>
+      </div>
+      
+      <div class="g3-drag-area">
+        <div class="sort-item" id="dragItem" data-word="${currentData.word}">
+          ${currentData.emoji}
+        </div>
+      </div>
+
+      <div class="g3-baskets">
+        <!-- 左边展示单数单词 -->
+        <div class="basket" data-type="1" id="basket1">
+          <div class="basket-label">${singleText}</div>
+          <div class="basket-desc">单数 (One)</div>
+        </div>
+        <!-- 右边展示复数单词 -->
+        <div class="basket" data-type="2" id="basket2">
+          <div class="basket-label">${pluralText}</div>
+          <div class="basket-desc">复数 (Many)</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const item = $('#dragItem');
+  item.addEventListener('pointerdown', onG3DragStart);
+
+  setTimeout(() => speak(currentData.word), 300);
+}
+
+function onG3DragStart(e) {
+  e.preventDefault();
+  const item = e.currentTarget;
+  const r = item.getBoundingClientRect();
+  const ghost = item.cloneNode(true);
+  ghost.classList.add('ghost');
+  ghost.style.left = r.left + 'px';
+  ghost.style.top = r.top + 'px';
+  ghost.style.width = r.width + 'px';
+  ghost.style.height = r.height + 'px';
+  document.body.appendChild(ghost);
+
+  g3Drag = { item, ghost, dx: e.clientX - r.left, dy: e.clientY - r.top, word: item.dataset.word };
+  item.classList.add('dragging');
+
+  window.addEventListener('pointermove', onG3DragMove);
+  window.addEventListener('pointerup', onG3DragEnd);
+}
+
+function onG3DragMove(e) {
+  if(!g3Drag) return;
+  g3Drag.ghost.style.left = (e.clientX - g3Drag.dx) + 'px';
+  g3Drag.ghost.style.top = (e.clientY - g3Drag.dy) + 'px';
+
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const target = el && el.closest ? el.closest('.basket') : null;
+
+  document.querySelectorAll('.basket.hover').forEach(b => { if(b !== target) b.classList.remove('hover'); });
+  if(target) target.classList.add('hover');
+}
+
+function onG3DragEnd(e) {
+  if(!g3Drag) return;
+  window.removeEventListener('pointermove', onG3DragMove);
+  window.removeEventListener('pointerup', onG3DragEnd);
+
+  const { item, ghost } = g3Drag;
+  ghost.remove();
+  item.classList.remove('dragging');
+  document.querySelectorAll('.basket.hover').forEach(b => b.classList.remove('hover'));
+
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const target = el && el.closest ? el.closest('.basket') : null;
+  g3Drag = null;
+
+  if(target) {
+    const type = target.dataset.type;
+    const currentData = game3.queue[game3.idx];
+    const isCorrect = (type === '2' && currentData.isPlural) || (type === '1' && !currentData.isPlural);
+
+    if(isCorrect) {
+      sfxRight();
+      speak(currentData.word);
+      game3.correct++;
+      game3.idx++;
+      item.style.transform = 'scale(0)';
+      setTimeout(() => renderG3(), 400);
+    } else {
+      sfxWrong();
+      item.classList.add('shake');
+      setTimeout(() => item.classList.remove('shake'), 440);
+    }
+  }
+}
+
+/* =========================================================
+   8. 游戏4：打地鼠（带难度调节）
+   ========================================================= */
+const game4 = { 
+  score: 0, 
+  timeLeft: 30, 
+  targetWord: null, 
+  timer: null, 
+  moleTimer: null, 
+  speed: 'slow' // 默认慢速
+};
+
+// 速度配置：spawn=出现间隔, stay=停留时间, maxMoles=同时出现数量
+const SPEED_CONFIG = {
+  slow:   { spawn: 1500, stay: 2500, maxMoles: 1 },
+  normal: { spawn: 1000, stay: 1800, maxMoles: 1 },
+  fast:   { spawn: 600,  stay: 1200, maxMoles: 2 }
+};
+
+function startG4() {
+  state.screen = 'g4';
+  $('#title').textContent = '打地鼠';
+  showBack(true);
+  game4.score = 0;
+  game4.timeLeft = 30;
+  game4.speed = 'slow';
+  
+  renderG4();
+  startG4Round();
+}
+
+function renderG4() {
+  stage.innerHTML = `
+    <div class="g4">
+      <div class="g4-head">
+        <div class="g4-target">请敲打：<span id="g4TargetText">...</span></div>
+        
+        <!-- 难度选择按钮 -->
+        <div class="speed-controls">
+          <button class="speed-btn ${game4.speed==='slow'?'active':''}" data-speed="slow">🐢 慢速</button>
+          <button class="speed-btn ${game4.speed==='normal'?'active':''}" data-speed="normal">🚶‍♂️ 普通</button>
+          <button class="speed-btn ${game4.speed==='fast'?'active':''}" data-speed="fast">🐇 快速</button>
+        </div>
+
+        <div class="g4-score">得分: <span id="g4ScoreText">0</span></div>
+        <div class="g4-score" style="color:#e74c3c;">倒计时: <span id="g4TimeText">30</span>s</div>
+      </div>
+      
+      <div class="g4-board" id="g4Board">
+        ${Array(9).fill(0).map((_, i) => `
+          <div class="hole" data-index="${i}">
+            <div class="mole" id="mole-${i}">
+              <div class="mole-emoji"></div>
+              <div class="mole-text"></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  
+  // 绑定敲打事件
+  document.querySelectorAll('.hole').forEach(hole => {
+    hole.addEventListener('pointerdown', (e) => {
+      const mole = hole.querySelector('.mole');
+      if(!mole.classList.contains('up') || mole.classList.contains('hit')) return;
+      
+      const word = mole.dataset.word;
+      if(word === game4.targetWord) {
+        sfxHit();
+        mole.classList.add('hit');
+        mole.insertAdjacentHTML('beforeend', '<div class="hit-star">💥</div>');
+        game4.score += 1;
+        $('#g4ScoreText').textContent = game4.score;
+        setTimeout(() => {
+          mole.classList.remove('up', 'hit');
+          mole.querySelector('.hit-star')?.remove();
+        }, 300);
+        nextG4Target();
+      } else {
+        sfxWrong();
+        mole.classList.add('shake');
+        setTimeout(()=>mole.classList.remove('shake'), 400);
+      }
+    });
+  });
+
+  // 绑定难度按钮事件
+  document.querySelectorAll('.speed-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      game4.speed = e.target.dataset.speed;
+      // 重启地鼠生成器以应用新速度
+      clearInterval(game4.moleTimer);
+      startMoleSpawner();
+    });
+  });
+}
+
+function nextG4Target() {
+  game4.targetWord = G1_POOL[Math.floor(Math.random() * G1_POOL.length)];
+  $('#g4TargetText').textContent = PARTS[game4.targetWord].en;
+  speak(PARTS[game4.targetWord].say);
+}
+
+function startG4Round() {
+  nextG4Target();
+
+  game4.timer = setInterval(() => {
+    game4.timeLeft--;
+    $('#g4TimeText').textContent = game4.timeLeft;
+    if(game4.timeLeft <= 0) endG4();
+  }, 1000);
+
+  startMoleSpawner();
+}
+
+function startMoleSpawner() {
+  const config = SPEED_CONFIG[game4.speed];
+  
+  game4.moleTimer = setInterval(() => {
+    // 选出目前没冒出来的洞
+    const allMoles = Array.from(document.querySelectorAll('.mole'));
+    const downMoles = allMoles.filter(m => !m.classList.contains('up'));
+    if(downMoles.length === 0) return;
+
+    // 根据配置决定冒出数量
+    let count = config.maxMoles;
+    if (count > 1 && Math.random() > 0.5) count = 1; // 随机减少数量，避免太拥挤
+
+    for(let i=0; i<count; i++) {
+      if(downMoles.length === 0) break;
+      const idx = Math.floor(Math.random() * downMoles.length);
+      const mole = downMoles.splice(idx, 1)[0];
+      
+      let word;
+      // 保证目标词经常出现
+      if(Math.random() < 0.4) {
+        word = game4.targetWord;
+      } else {
+        const others = G1_POOL.filter(k => k !== game4.targetWord);
+        word = others[Math.floor(Math.random() * others.length)];
+      }
+      
+      mole.dataset.word = word;
+      mole.querySelector('.mole-emoji').textContent = PARTS[word].emoji;
+      mole.querySelector('.mole-text').textContent = PARTS[word].en;
+      
+      mole.classList.add('up');
+      
+      // 根据配置停留时间缩回
+      setTimeout(() => {
+        if(mole.classList.contains('up') && !mole.classList.contains('hit')) {
+          mole.classList.remove('up');
+        }
+      }, config.stay);
+    }
+  }, config.spawn);
+}
+
+function endG4() {
+  clearInterval(game4.timer);
+  clearInterval(game4.moleTimer);
+  document.querySelectorAll('.mole').forEach(m => m.classList.remove('up'));
+  sfxWin();
+  state.stars += game4.score;
+  updateStars();
+  showResult('🔨', '时间到！', `你敲对了 <b>${game4.score}</b> 个地鼠`, Math.min(game4.score, 5), startG4);
+}
+
+/* =========================================================
+   9. 通用结果页
+   ========================================================= */
+function showResult(emoji, title, html, stars, onAgain){
+  stage.innerHTML = `
+    <div class="result">
+      <div class="result-emoji">${emoji}</div>
+      <h2>${title}</h2>
+      <p>${html}</p>
+      <div class="result-stars">${'⭐'.repeat(Math.min(stars, 5))}</div>
+      <div class="result-btns">
+        <button class="btn primary" id="againBtn">再玩一次</button>
+        <button class="btn" id="homeBtn">回到首页</button>
+      </div>
+    </div>
+  `;
+  $('#againBtn').addEventListener('click', onAgain);
+  $('#homeBtn').addEventListener('click', renderMenu);
+}
+
+/* =========================================================
+   10. 返回按钮 & 启动
+   ========================================================= */
+$('#backBtn').addEventListener('click', ()=>{
+  clearTimeout(autoNextTimer);
+  clearInterval(game4.timer);
+  clearInterval(game4.moleTimer);
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  renderMenu();
+});
+
+renderMenu();
+updateStars();
+</script>
+</body>
+</html>
